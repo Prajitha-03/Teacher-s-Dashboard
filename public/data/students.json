@@ -1,0 +1,24 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "name": "John Smith",
+      "class": "Mathematics 101"
+    },
+    {
+      "id": 2,
+      "name": "Emily Johnson",
+      "class": "Mathematics 101"
+    },
+    {
+      "id": 3,
+      "name": "Michael Brown",
+      "class": "Science 201"
+    },
+    {
+      "id": 4,
+      "name": "Sarah Davis",
+      "class": "Science 201"
+    }
+  ]
+}
