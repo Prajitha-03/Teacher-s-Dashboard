@@ -43,7 +43,7 @@ const QuizResults = ({ quizzesData }) => {
       const row = [quiz.name, quiz.date, quiz.total];
       allStudents.forEach(student => {
         const result = resultsMap[quiz.key]?.[student.id];
-        row.push(result ? result.score : '');
+        row.push(result ? result.score : 'NO ATTEMPT');
       });
       return row;
     });
