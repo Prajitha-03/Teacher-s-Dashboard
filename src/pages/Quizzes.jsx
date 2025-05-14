@@ -14,34 +14,70 @@ const Quizzes = () => {
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
-        const studentsResponse = await axios.get('/data/students.json');
-        const mockQuizzes = studentsResponse.data.students.map(student => {
-          const quizTemplates = [
-            { name: 'Algebra Basics', date: 'Feb 10, 2023', total: 100 },
-            { name: 'Linear Equations', date: 'Mar 5, 2023', total: 100 },
-            { name: 'Midterm Exam', date: 'Apr 15, 2023', total: 100 }
-          ];
-          
-          const quizzes = quizTemplates.map((quiz, index) => {
-            const score = Math.floor(Math.random() * 40) + 60; // Random score between 60-100
-            return {
-              id: index + 1,
-              name: quiz.name,
-              date: quiz.date,
-              score: score,
-              total: quiz.total,
-              passed: score >= 70
-            };
-          });
+        const res = await axios.get('/data/LMS_Techers_Dashboard.json');
+        const { students, courses } = res.data;
 
-          return {
-            studentId: student.id,
-            studentName: student.name,
-            quizzes: quizzes
-          };
+        const studentMap = students.reduce((map, student) => {
+          map[student.id] = student.name;
+          return map;
+        }, {});
+
+        const collectedQuizzes = [];
+
+        courses.forEach(course => {
+          course.units.forEach(unit => {
+            unit.lessons.forEach(lesson => {
+              if (lesson.type === 'quiz' && lesson.attempts) {
+                lesson.attempts.forEach(studentAttempts => {
+                  const studentId = studentAttempts.studentId;
+                  studentAttempts.attempts.forEach(attempt => {
+                    collectedQuizzes.push({
+                      studentId,
+                      studentName: studentMap[studentId],
+                      name: lesson.title,
+                      date: attempt.date,
+                      score: attempt.score,
+                      total: attempt.outOf,
+                      passed: attempt.score / attempt.outOf >= 0.6
+                    });
+                  });
+                });
+              }
+            });
+
+            // From unit quizzes
+            unit.quizzes?.forEach(quiz => {
+              quiz.attempts?.forEach(studentAttempts => {
+                const studentId = studentAttempts.studentId;
+                studentAttempts.attempts.forEach(attempt => {
+                  collectedQuizzes.push({
+                    studentId,
+                    studentName: studentMap[studentId],
+                    name: quiz.title,
+                    date: attempt.date,
+                    score: attempt.score,
+                    total: attempt.outOf,
+                    passed: attempt.score / attempt.outOf >= 0.6
+                  });
+                });
+              });
+            });
+          });
         });
 
-        setAllQuizzes(mockQuizzes);
+        const groupedByStudent = collectedQuizzes.reduce((acc, quiz) => {
+          if (!acc[quiz.studentId]) {
+            acc[quiz.studentId] = {
+              studentId: quiz.studentId,
+              studentName: quiz.studentName,
+              quizzes: []
+            };
+          }
+          acc[quiz.studentId].quizzes.push(quiz);
+          return acc;
+        }, {});
+
+        setAllQuizzes(Object.values(groupedByStudent));
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -56,11 +92,15 @@ const Quizzes = () => {
     .map(student => ({
       ...student,
       quizzes: student.quizzes.filter(quiz => {
-        const matchesSearch = quiz.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            student.studentName.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' ||
-                           (statusFilter === 'passed' && quiz.passed) ||
-                           (statusFilter === 'failed' && !quiz.passed);
+        const matchesSearch =
+          quiz.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.studentName.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus =
+          statusFilter === 'all' ||
+          (statusFilter === 'passed' && quiz.passed) ||
+          (statusFilter === 'failed' && !quiz.passed);
+
         return matchesSearch && matchesStatus;
       })
     }))
@@ -143,20 +183,8 @@ const Quizzes = () => {
             </div>
 
             {filteredQuizzes.length > 0 ? (
-              <div className="space-y-8">
-                {filteredQuizzes.map(student => (
-                  <div key={student.studentId} className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {student.studentName}
-                        <span className="ml-2 text-sm font-normal text-gray-500">
-                          (Student ID: {student.studentId})
-                        </span>
-                      </h3>
-                    </div>
-                    <QuizResults quizzes={student.quizzes} editable={true} />
-                  </div>
-                ))}
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <QuizResults quizzesData={filteredQuizzes} />
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow p-8 text-center">

@@ -1,0 +1,240 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "name": "Aanya Sharma"
+    },
+    {
+      "id": 2,
+      "name": "Rohit Verma"
+    },
+    {
+      "id": 3,
+      "name": "Sneha Iyer"
+    },
+    {
+      "id": 4,
+      "name": "Kabir Mehra"
+    },
+    {
+      "id": 5,
+      "name": "Diya Nair"
+    }
+  ],
+  "courses": [
+    {
+      "id": "C101",
+      "title": "Introduction to Python",
+      "units": [
+        {
+          "id": "U1",
+          "title": "Basics of Python",
+          "lessons": [
+            {
+              "id": "L1",
+              "title": "What is Python?",
+              "type": "video",
+              "completedBy": [
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "id": "L2",
+              "title": "Installing Python",
+              "type": "doc",
+              "completedBy": [
+                1,
+                3
+              ]
+            },
+            {
+              "id": "L3",
+              "title": "Quick Python MCQ",
+              "type": "quiz",
+              "attempts": [
+                {
+                  "studentId": 1,
+                  "attempts": [
+                    {
+                      "score": 9,
+                      "outOf": 10,
+                      "date": "2025-05-10"
+                    }
+                  ]
+                },
+                {
+                  "studentId": 2,
+                  "attempts": [
+                    {
+                      "score": 7,
+                      "outOf": 10,
+                      "date": "2025-05-11"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "quizzes": [
+            {
+              "id": "Q1",
+              "title": "Python Basics Quiz",
+              "type": "MCQ",
+              "attempts": [
+                {
+                  "studentId": 1,
+                  "attempts": [
+                    {
+                      "score": 2,
+                      "outOf": 10,
+                      "date": "2025-05-10"
+                    }
+                  ]
+                },
+                {
+                  "studentId": 2,
+                  "attempts": [
+                    {
+                      "score": 7,
+                      "outOf": 10,
+                      "date": "2025-05-11"
+                    },
+                    {
+                      "score": 9,
+                      "outOf": 10,
+                      "date": "2025-05-12"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "U2",
+          "title": "Data Types",
+          "lessons": [
+            {
+              "id": "L4",
+              "title": "Numbers & Strings",
+              "type": "video",
+              "completedBy": [
+                1,
+                2,
+                4
+              ]
+            }
+          ],
+          "quizzes": []
+        }
+      ]
+    },
+    {
+      "id": "C102",
+      "title": "Web Development Basics",
+      "units": [
+        {
+          "id": "U3",
+          "title": "HTML & CSS",
+          "lessons": [
+            {
+              "id": "L5",
+              "title": "Introduction to HTML",
+              "type": "doc",
+              "completedBy": [
+                2,
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "id": "L6",
+              "title": "HTML Practice Quiz",
+              "type": "quiz",
+              "attempts": [
+                {
+                  "studentId": 5,
+                  "attempts": [
+                    {
+                      "score": 6,
+                      "outOf": 10,
+                      "date": "2025-05-11"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "quizzes": [
+            {
+              "id": "Q2",
+              "title": "HTML Basics Quiz",
+              "type": "Multiple Select",
+              "attempts": [
+                {
+                  "studentId": 5,
+                  "attempts": [
+                    {
+                      "score": 5,
+                      "outOf": 10,
+                      "date": "2025-05-10"
+                    },
+                    {
+                      "score": 7,
+                      "outOf": 10,
+                      "date": "2025-05-12"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C103",
+      "title": "JavaScript Essentials",
+      "units": [
+        {
+          "id": "U4",
+          "title": "JS Basics",
+          "lessons": [
+            {
+              "id": "L7",
+              "title": "What is JavaScript?",
+              "type": "video",
+              "completedBy": [
+                1,
+                3,
+                5
+              ]
+            }
+          ],
+          "quizzes": [
+            {
+              "id": "Q3",
+              "title": "JS Basics QA",
+              "type": "QA",
+              "attempts": [
+                {
+                  "studentId": 3,
+                  "attempts": [
+                    {
+                      "score": 9,
+                      "outOf": 10,
+                      "date": "2025-05-14"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

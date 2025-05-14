@@ -15,35 +15,71 @@ const StudentDetail = () => {
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        // First fetch the student's basic info
-        const studentsResponse = await axios.get('/data/students.json');
-        const student = studentsResponse.data.students.find(s => s.id === parseInt(id));
-        
+        const response = await axios.get('/data/LMS_Techers_Dashboard.json');
+        const { students, courses } = response.data;
+        const studentId = parseInt(id);
+        const student = students.find(s => s.id === studentId);
+
         if (!student) {
           throw new Error('Student not found');
         }
 
-        // In a real app, you would fetch lesson and quiz data separately
-        // For this example, we'll mock it based on the student ID
-        const mockLessonData = [
-          { id: 1, title: 'Introduction to Algebra', completed: true, progress: 100 },
-          { id: 2, title: 'Linear Equations', completed: false, progress: 65 },
-          { id: 3, title: 'Quadratic Equations', completed: false, progress: 20 },
-        ];
+        const lessons = [];
+        const quizzes = [];
 
-        const mockQuizData = [
-          { id: 1, name: 'Algebra Basics', date: 'Feb 10, 2023', score: 85, total: 100, passed: true },
-          { id: 2, name: 'Linear Equations Quiz', date: 'Mar 5, 2023', score: 72, total: 100, passed: true },
-          { id: 3, name: 'Midterm Exam', date: 'Apr 15, 2023', score: 58, total: 100, passed: false },
-        ];
+        courses.forEach(course => {
+          course.units.forEach(unit => {
+            unit.lessons.forEach(lesson => {
+              const isCompleted = lesson.completedBy?.includes(studentId);
+              if (lesson.type !== 'quiz') {
+                lessons.push({
+                  id: lesson.id,
+                  title: lesson.title,
+                  completed: isCompleted || false,
+                  progress: isCompleted ? 100 : 0
+                });
+              } else if (lesson.attempts) {
+                const quizAttempt = lesson.attempts.find(a => a.studentId === studentId);
+                if (quizAttempt) {
+                  quizAttempt.attempts.forEach(attempt => {
+                    quizzes.push({
+                      id: lesson.id,
+                      name: lesson.title,
+                      date: attempt.date,
+                      score: attempt.score,
+                      total: attempt.outOf,
+                      passed: attempt.score / attempt.outOf >= 0.6
+                    });
+                  });
+                }
+              }
+            });
+
+            unit.quizzes?.forEach(quiz => {
+              const quizAttempt = quiz.attempts?.find(a => a.studentId === studentId);
+              if (quizAttempt) {
+                quizAttempt.attempts.forEach(attempt => {
+                  quizzes.push({
+                    id: quiz.id,
+                    name: quiz.title,
+                    date: attempt.date,
+                    score: attempt.score,
+                    total: attempt.outOf,
+                    passed: attempt.score / attempt.outOf >= 0.6
+                  });
+                });
+              }
+            });
+          });
+        });
 
         setStudentData({
           ...student,
-          email: `${student.name.replace(' ', '.').toLowerCase()}@school.edu`,
-          status: 'active', // Default status
+          email: `${student.name.replace(/\s+/g, '.').toLowerCase()}@school.edu`,
+          status: 'active',
           joinDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-          lessons: mockLessonData,
-          quizzes: mockQuizData
+          lessons,
+          quizzes
         });
         setLoading(false);
       } catch (err) {
@@ -55,7 +91,7 @@ const StudentDetail = () => {
     fetchStudentData();
   }, [id]);
 
-  if (loading) {
+  if (loading || !studentData) {
     return (
       <div className="flex">
         <Sidebar />
@@ -63,7 +99,7 @@ const StudentDetail = () => {
           <Header />
           <main className="p-6">
             <div className="flex items-center justify-center h-64">
-              <p>Loading student data...</p>
+              <p>{loading ? 'Loading student data...' : 'Student not found'}</p>
             </div>
           </main>
         </div>
@@ -80,22 +116,6 @@ const StudentDetail = () => {
           <main className="p-6">
             <div className="flex items-center justify-center h-64 text-red-500">
               <p>Error loading student data: {error}</p>
-            </div>
-          </main>
-        </div>
-      </div>
-    );
-  }
-
-  if (!studentData) {
-    return (
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 overflow-auto">
-          <Header />
-          <main className="p-6">
-            <div className="flex items-center justify-center h-64">
-              <p>Student not found</p>
             </div>
           </main>
         </div>
@@ -139,7 +159,7 @@ const StudentDetail = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Class</p>
-                  <p className="text-gray-900">{studentData.class}</p>
+                  <p className="text-gray-900">{studentData.class || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -151,7 +171,6 @@ const StudentDetail = () => {
 
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="font-medium text-gray-900 mb-4">Quiz Results</h3>
-            <QuizResults quizzes={studentData.quizzes} />
           </div>
         </main>
       </div>

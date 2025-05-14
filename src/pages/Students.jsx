@@ -28,8 +28,8 @@ const Students = () => {
   }, []);
 
   const filteredStudents = students.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         student.class.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.class.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -75,8 +75,8 @@ const Students = () => {
           <div className="flex flex-col space-y-6">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-bold text-gray-900">Student Management</h1>
-              <Link 
-                to="#" 
+              <Link
+                to="#"
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
               >
                 Add New Student

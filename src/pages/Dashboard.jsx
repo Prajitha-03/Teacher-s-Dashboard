@@ -19,8 +19,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchRecentStudents = async () => {
       try {
-        const response = await axios.get('/data/students.json');
-         setRecentStudents(response.data.students.slice(0, 7));
+        const response = await axios.get('/data/LMS_Techers_Dashboard.json');
+         setRecentStudents(response.data.students);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -95,7 +95,7 @@ const Dashboard = () => {
                     student={{
                       ...student,
                       email: `${student.name.replace(' ', '.').toLowerCase()}@school.edu`,
-                      status: 'active' // Default status since not in JSON
+                      status: 'active' 
                     }} 
                   />
                 ))}
