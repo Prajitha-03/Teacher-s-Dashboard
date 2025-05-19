@@ -15,7 +15,7 @@ const Students = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await axios.get('/data/students.json');
+        const response = await axios.get('/data/LMS_Techers_Dashboard.json');
         setStudents(response.data.students);
         setLoading(false);
       } catch (err) {
