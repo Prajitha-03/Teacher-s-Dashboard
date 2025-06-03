@@ -14,8 +14,13 @@ const Quizzes = () => {
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
-        const res = await axios.get('/data/LMS_Techers_Dashboard.json');
-        const { students, courses } = res.data;
+        const [studentsRes, coursesRes] = await Promise.all([
+          axios.get('http://localhost:3001/students'),
+          axios.get('http://localhost:3001/courses')
+        ]);
+
+        const students = studentsRes.data;
+        const courses = coursesRes.data;
 
         const studentMap = students.reduce((map, student) => {
           map[student.id] = student.name;

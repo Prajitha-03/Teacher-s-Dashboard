@@ -12,11 +12,10 @@
     "web-vitals": "^5.0.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+  "start": "concurrently \"npm run start-react\" \"npm run start:json-server\"",
+  "start-react": "react-scripts start",
+  "start:json-server": "json-server --watch LMS_Techers_Dashboard.json --port 3001"
+},
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -34,5 +33,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }

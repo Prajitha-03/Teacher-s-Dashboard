@@ -15,8 +15,14 @@ const StudentDetail = () => {
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const response = await axios.get('/data/LMS_Techers_Dashboard.json');
-        const { students, courses } = response.data;
+        const [studentsResponse, coursesResponse] = await Promise.all([
+          axios.get('http://localhost:3001/students'),
+          axios.get('http://localhost:3001/courses')
+        ]);
+
+        const students = studentsResponse.data;
+        const courses = coursesResponse.data;
+
         const studentId = parseInt(id);
         const student = students.find(s => s.id === studentId);
 
@@ -133,9 +139,8 @@ const StudentDetail = () => {
             <h1 className="text-2xl font-bold text-gray-900">{studentData.name}</h1>
             <div className="flex items-center space-x-4 mt-2">
               <span className="text-gray-600">{studentData.email}</span>
-              <span className={`px-2 py-1 text-xs rounded-full ${
-                studentData.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}>
+              <span className={`px-2 py-1 text-xs rounded-full ${studentData.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                }`}>
                 {studentData.status}
               </span>
             </div>
@@ -171,6 +176,7 @@ const StudentDetail = () => {
 
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="font-medium text-gray-900 mb-4">Quiz Results</h3>
+            <QuizResults quizzes={studentData.quizzes} />
           </div>
         </main>
       </div>
