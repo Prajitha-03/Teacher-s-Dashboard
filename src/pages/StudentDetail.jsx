@@ -8,7 +8,14 @@ import QuizResults from '../components/QuizResults';
 
 const StudentDetail = () => {
   const { id } = useParams();
-  const [studentData, setStudentData] = useState(null);
+  const [studentData, setStudentData] = useState({
+    name: '',
+    email: '',
+    status: 'active',
+    joinDate: '',
+    lessons: [],
+    quizzes: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,8 +30,7 @@ const StudentDetail = () => {
         const students = studentsResponse.data;
         const courses = coursesResponse.data;
 
-        const studentId = parseInt(id);
-        const student = students.find(s => s.id === studentId);
+        const student = students.find(s => s.id === id);
 
         if (!student) {
           throw new Error('Student not found');
@@ -34,9 +40,9 @@ const StudentDetail = () => {
         const quizzes = [];
 
         courses.forEach(course => {
-          course.units.forEach(unit => {
-            unit.lessons.forEach(lesson => {
-              const isCompleted = lesson.completedBy?.includes(studentId);
+          course.units?.forEach(unit => {
+            unit.lessons?.forEach(lesson => {
+              const isCompleted = lesson.completedBy?.includes(parseInt(id));
               if (lesson.type !== 'quiz') {
                 lessons.push({
                   id: lesson.id,
@@ -45,11 +51,10 @@ const StudentDetail = () => {
                   progress: isCompleted ? 100 : 0
                 });
               } else if (lesson.attempts) {
-                const quizAttempt = lesson.attempts.find(a => a.studentId === studentId);
+                const quizAttempt = lesson.attempts.find(a => a.studentId === parseInt(id));
                 if (quizAttempt) {
                   quizAttempt.attempts.forEach(attempt => {
                     quizzes.push({
-                      id: lesson.id,
                       name: lesson.title,
                       date: attempt.date,
                       score: attempt.score,
@@ -62,11 +67,10 @@ const StudentDetail = () => {
             });
 
             unit.quizzes?.forEach(quiz => {
-              const quizAttempt = quiz.attempts?.find(a => a.studentId === studentId);
+              const quizAttempt = quiz.attempts?.find(a => a.studentId === parseInt(id));
               if (quizAttempt) {
                 quizAttempt.attempts.forEach(attempt => {
                   quizzes.push({
-                    id: quiz.id,
                     name: quiz.title,
                     date: attempt.date,
                     score: attempt.score,
@@ -84,8 +88,8 @@ const StudentDetail = () => {
           email: `${student.name.replace(/\s+/g, '.').toLowerCase()}@school.edu`,
           status: 'active',
           joinDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-          lessons,
-          quizzes
+          lessons: lessons || [],
+          quizzes: quizzes || []
         });
         setLoading(false);
       } catch (err) {
@@ -97,7 +101,7 @@ const StudentDetail = () => {
     fetchStudentData();
   }, [id]);
 
-  if (loading || !studentData) {
+  if (loading) {
     return (
       <div className="flex">
         <Sidebar />
@@ -105,7 +109,7 @@ const StudentDetail = () => {
           <Header />
           <main className="p-6">
             <div className="flex items-center justify-center h-64">
-              <p>{loading ? 'Loading student data...' : 'Student not found'}</p>
+              <p>Loading student data...</p>
             </div>
           </main>
         </div>
@@ -128,6 +132,29 @@ const StudentDetail = () => {
       </div>
     );
   }
+
+  if (!studentData.name) {
+    return (
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1 overflow-auto">
+          <Header />
+          <main className="p-6">
+            <div className="flex items-center justify-center h-64">
+              <p>Student not found</p>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  // Format quizzes data for the QuizResults component
+  const quizzesDataForResults = [{
+    studentId: id,
+    studentName: studentData.name,
+    quizzes: studentData.quizzes
+  }];
 
   return (
     <div className="flex">
@@ -176,7 +203,7 @@ const StudentDetail = () => {
 
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="font-medium text-gray-900 mb-4">Quiz Results</h3>
-            <QuizResults quizzes={studentData.quizzes} />
+            <QuizResults quizzesData={quizzesDataForResults} />
           </div>
         </main>
       </div>
